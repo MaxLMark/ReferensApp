@@ -1,0 +1,167 @@
+﻿@model ReferensApp.Models.ViewModels.DatePickerViewModel
+
+<div class="jumbotron">
+    <h1>
+    RE-FAP
+        
+        </h1>
+</div>
+
+
+@foreach (var day in Model.Days)
+{
+
+    <div class="row">
+        <div class="col">
+
+            <p>@day.ToString("MMMM dd")</p>
+            @foreach (var item in Model.Hours.Where(dt => dt.Day == day.Day).ToList())
+            {
+
+                if (Model.ReservedTimes.Any(r => r.Date == item))
+                {
+                    var testBooking = Model.ReservedTimes.Where(r => r.Date == item).FirstOrDefault();
+
+
+
+
+                    if (testBooking.IsBooked)
+                    {
+                        <a href="#" data-hour="@item.Hour" data-month="@day.Month" data-day="@day.Day" data-target="#cancelBookingModal" data-bookedby="@testBooking.BookedBy" data-bookingid="@testBooking.MeetingId" class="btn btn-sm btn-danger hour">@item.Hour:00</a>
+                    }
+                    else
+                    {
+                        <a href="#" data-hour="@item.Hour" data-month="@day.Month" data-day="@day.Day" data-target="#basicModal" data-bookedby="@testBooking.BookedBy" data-bookingid="@testBooking.MeetingId" class="btn btn-sm btn-success hour">@item.Hour:00</a>
+                    }
+
+                }
+                else
+                {
+                    <a href="#" data-hour="@item.Hour" data-month="@day.Month" data-day="@day.Day" data-target="#basicModal" class="btn btn-sm btn-info hour">@item.Hour:00</a>
+                }
+            }
+        </div>
+    </div>
+    <hr />
+}
+
+@using (Html.BeginForm())
+{
+    <div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">ReferensMW</h4>
+                </div>
+                <div class="modal-body h3">
+                    <div class="bookedTime">
+                        <h3 id="pickedHour">Du har valt följande tid: </h3>
+                    </div>
+
+                    <input type="hidden" id="monthPicked" name="month" />
+                    <input type="hidden" id="dayPicked" name="day" />
+                    <input type="hidden" id="hourPicked" name="hour" />
+
+                    <div>
+                        <p>Skriv in namn här:</p>
+                        <input type="text" name="user" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-success" value="Öppna bokning" />
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng bokning</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@using (Html.BeginForm("Delete","Home",FormMethod.Post))
+{
+    <div class="modal fade" id="cancelBookingModal" tabindex="-1" role="dialog" aria-labelledby="cancelBookingModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">ReferensMW</h4>
+                </div>
+                <div class="modal-body h3">
+                    <div class="bookedBy">
+                        <h3 id="pickedHour">Tiden är redan bokad av: </h3>
+                    </div>
+
+                    <input type="hidden" id="bookingId" name="bookingId" />
+                    @*<input type="hidden" id="dayPicked" name="day" />
+                        <input type="hidden" id="hourPicked" name="hour" />*@
+
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-danger" value="Avboka" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section scripts{
+    <script>
+        $(".hour").click(function (e) {
+            //e.preventDefault();
+            var $this = $(this);
+            var bookingid = $(this).data("bookingid");
+            var monthPicked = $(this).data("month");
+            var dayPicked = $(this).data("day");
+            var hourPicked = $(this).data("hour");
+            var bookedby = $(this).data("bookedby");
+
+            if (bookedby != undefined) {
+
+                //bookedby = $(this).data("bookedBy")
+                console.log(bookedby);
+            } else {
+
+            }
+            if (bookedby == undefined) {
+
+                $("#basicModal").data("hourPicked", hourPicked).modal("toggle", $this);
+                $("#basicModal").data("monthPicked", monthPicked);
+                $("#basicModal").data("dayPicked", dayPicked);
+
+            } else {
+
+                $("#cancelBookingModal").data("bookedby", bookedby).modal("toggle", $this);
+                $("#cancelBookingModal").data("bookingid", bookingid);
+            }
+
+
+
+        });
+
+        $("#basicModal").on("shown.bs.modal", function (e) {
+            //data-fileName attribute associated with the modal added in the click event of the button
+            //alert($(this).data("hourPicked"));
+            if ($(this).data("hourPicked") < 10) {
+                $('.bookedTime').text("Du har valt följande tid: 0" + $(this).data("hourPicked") + ":00");
+            } else {
+                $('.bookedTime').text("Du har valt följande tid: " + $(this).data("hourPicked") + ":00");
+            }
+
+            $("#monthPicked").val($(this).data("monthPicked"));
+            $("#dayPicked").val($(this).data("dayPicked"));
+            $("#hourPicked").val($(this).data("hourPicked"));
+
+        });
+
+        $("#cancelBookingModal").on("shown.bs.modal", function (e) {
+
+            $('.bookedBy').text("Tiden är redan bokad av: " + $(this).data("bookedby"));
+
+            console.log($(this).data("bookingid"));
+            $("#bookingId").val($(this).data("bookingid"));
+
+        })
+    </script>
+}
