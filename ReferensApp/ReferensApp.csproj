@@ -209,6 +209,10 @@
     <Compile Include="Migrations\201902210935085_identity.Designer.cs">
       <DependentUpon>201902210935085_identity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902251402084_removeHour.cs" />
+    <Compile Include="Migrations\201902251402084_removeHour.Designer.cs">
+      <DependentUpon>201902251402084_removeHour.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AppRole.cs" />
     <Compile Include="Models\AppUser.cs" />
@@ -279,6 +283,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902210935085_identity.resx">
       <DependentUpon>201902210935085_identity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902251402084_removeHour.resx">
+      <DependentUpon>201902251402084_removeHour.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

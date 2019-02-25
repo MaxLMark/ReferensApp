@@ -15,8 +15,5 @@ namespace ReferensApp.Models
         public DateTime Date { get; set; }
         public bool IsBooked { get; set; }
         public string BookedBy { get; set; }
-
-        //TODO: Fix this!
-        public int Hour { get; set; }
     }
 }

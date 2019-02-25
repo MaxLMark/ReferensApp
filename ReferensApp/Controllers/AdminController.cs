@@ -12,6 +12,7 @@ using System.Web.Mvc;
 
 namespace ReferensApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly IReferenceRepository _repo;
@@ -24,51 +25,30 @@ namespace ReferensApp.Controllers
         [Route("Admin")]
         public ActionResult Index()
         {
-            return View(GetDates());
+            var vm = new DatePickerViewModel(_repo);
+
+            return View(vm.GetDates());
         }
 
         [HttpPost]
-        public ActionResult Index(string user, int month, int day, int hour)
+        public ActionResult Index(string user, int month, int day, int hour, string button, int? bookingid)
         {
-            var vm = new DatePickerViewModel();
-            var dt = new DateTime(2019, month, day, hour, 0, 0);
-            var newBooking = new Meeting()
+            var vm = new DatePickerViewModel(_repo);
+
+            if (button == "Stäng bokning")
             {
-                Date = dt,
+                _repo.DeleteMeeting((int)bookingid);
+                return View(vm.GetDates());
+            }
+
+            _repo.CreateMeeting(new Meeting()
+            {
+                Date = new DateTime(2019, month, day, hour, 0, 0),
                 BookedBy = user,
                 IsBooked = false
-            };
+            });
 
-            _repo.CreateMeeting(newBooking);
-
-            return View(GetDates());
-        }
-
-        
-
-        public DatePickerViewModel GetDates()
-        {
-            var vm = new DatePickerViewModel();
-            DateTime ListingStartDate = DateTime.Today.AddDays(-3);
-
-            if (vm.Hours == null)
-            {
-                vm.Hours = new List<DateTime>();
-            }
-
-            var dates = Enumerable.Range(0, 15).Select(days => ListingStartDate.AddDays(days)).ToList();
-            foreach (var date in dates)
-            {
-                var Dthours = Enumerable.Range(9, 6).Select(hours => date.AddHours(hours)).ToList();
-                vm.Hours.AddRange(Dthours);
-            }
-
-            vm.Days = dates;
-
-            vm.ReservedTimes = _repo.GetAllMeetings();
-
-
-            return vm;
+            return View(vm.GetDates());
         }
     }
 }

@@ -2,18 +2,14 @@
 
 <div class="jumbotron">
     <h1>
-    RE-FAP
-        
-        </h1>
+        ReferensMW
+    </h1>
 </div>
-
 
 @foreach (var day in Model.Days)
 {
-
     <div class="row">
         <div class="col">
-
             <p>@day.ToString("MMMM dd")</p>
             @foreach (var item in Model.Hours.Where(dt => dt.Day == day.Day).ToList())
             {
@@ -21,9 +17,6 @@
                 if (Model.ReservedTimes.Any(r => r.Date == item))
                 {
                     var testBooking = Model.ReservedTimes.Where(r => r.Date == item).FirstOrDefault();
-
-
-
 
                     if (testBooking.IsBooked)
                     {
@@ -33,7 +26,6 @@
                     {
                         <a href="#" data-hour="@item.Hour" data-month="@day.Month" data-day="@day.Day" data-target="#basicModal" data-bookedby="@testBooking.BookedBy" data-bookingid="@testBooking.MeetingId" class="btn btn-sm btn-success hour">@item.Hour:00</a>
                     }
-
                 }
                 else
                 {
@@ -62,15 +54,12 @@
                     <input type="hidden" id="monthPicked" name="month" />
                     <input type="hidden" id="dayPicked" name="day" />
                     <input type="hidden" id="hourPicked" name="hour" />
+                    <input type="hidden" id="bookingid" name="bookingid" />
 
-                    <div>
-                        <p>Skriv in namn här:</p>
-                        <input type="text" name="user" />
-                    </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-success" value="Öppna bokning" />
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Stäng bokning</button>
+                    <input type="submit" class="btn btn-success" value="Öppna bokning" name="button" />
+                    <input type="submit" class="btn btn-danger" value="Stäng bokning" name="button" />
                 </div>
             </div>
         </div>
@@ -78,7 +67,7 @@
 
 }
 
-@using (Html.BeginForm("Delete","Home",FormMethod.Post))
+@using (Html.BeginForm("Delete", "Home", FormMethod.Post))
 {
     <div class="modal fade" id="cancelBookingModal" tabindex="-1" role="dialog" aria-labelledby="cancelBookingModal" aria-hidden="true">
         <div class="modal-dialog">
@@ -89,7 +78,7 @@
                 </div>
                 <div class="modal-body h3">
                     <div class="bookedBy">
-                        <h3 id="pickedHour">Tiden är redan bokad av: </h3>
+                        <h3 id="pickedHour">Tiden är bokad av: </h3>
                     </div>
 
                     <input type="hidden" id="bookingId" name="bookingId" />
@@ -105,7 +94,6 @@
     </div>
 }
 
-
 @section scripts{
     <script>
         $(".hour").click(function (e) {
@@ -117,32 +105,21 @@
             var hourPicked = $(this).data("hour");
             var bookedby = $(this).data("bookedby");
 
-            if (bookedby != undefined) {
-
-                //bookedby = $(this).data("bookedBy")
-                console.log(bookedby);
-            } else {
-
-            }
-            if (bookedby == undefined) {
+            if (bookedby == undefined || bookedby == "") {
 
                 $("#basicModal").data("hourPicked", hourPicked).modal("toggle", $this);
                 $("#basicModal").data("monthPicked", monthPicked);
                 $("#basicModal").data("dayPicked", dayPicked);
+                $("#basicModal").data("bookingid", bookingid);
 
             } else {
 
                 $("#cancelBookingModal").data("bookedby", bookedby).modal("toggle", $this);
                 $("#cancelBookingModal").data("bookingid", bookingid);
             }
-
-
-
         });
 
         $("#basicModal").on("shown.bs.modal", function (e) {
-            //data-fileName attribute associated with the modal added in the click event of the button
-            //alert($(this).data("hourPicked"));
             if ($(this).data("hourPicked") < 10) {
                 $('.bookedTime').text("Du har valt följande tid: 0" + $(this).data("hourPicked") + ":00");
             } else {
@@ -152,16 +129,16 @@
             $("#monthPicked").val($(this).data("monthPicked"));
             $("#dayPicked").val($(this).data("dayPicked"));
             $("#hourPicked").val($(this).data("hourPicked"));
-
+            $("#bookingid").val($(this).data("bookingid"));
+            console.log($("#bookingId").val())
         });
 
         $("#cancelBookingModal").on("shown.bs.modal", function (e) {
 
-            $('.bookedBy').text("Tiden är redan bokad av: " + $(this).data("bookedby"));
+            $('.bookedBy').text("Tiden är bokad av: " + $(this).data("bookedby"));
 
             console.log($(this).data("bookingid"));
             $("#bookingId").val($(this).data("bookingid"));
-
         })
     </script>
 }

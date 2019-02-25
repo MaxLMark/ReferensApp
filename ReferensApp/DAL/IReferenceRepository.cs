@@ -13,6 +13,5 @@ namespace ReferensApp.DAL
         void DeleteMeeting(int Id);
         void CreateMeeting(Meeting meeting);
         void UpdateMeeting(Meeting meeting);
-        
     }
 }

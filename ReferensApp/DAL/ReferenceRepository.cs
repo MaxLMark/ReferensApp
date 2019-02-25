@@ -16,16 +16,21 @@ namespace ReferensApp.DAL
 
         public void CreateMeeting(Meeting meeting)
         {
-            _context.Meetings.Add(meeting);
-            _context.SaveChanges();
+            if (_context.Meetings.Where(m => m.Date == meeting.Date).ToList().Count() == 0)
+            {
+                _context.Meetings.Add(meeting);
+                _context.SaveChanges();
+            }
         }
 
         public void DeleteMeeting(int Id)
         {
             var meeting = _context.Meetings.Where(m => m.MeetingId == Id).FirstOrDefault();
-
-            _context.Meetings.Remove(meeting);
-            _context.SaveChanges();
+            if (meeting != null)
+            {
+                _context.Meetings.Remove(meeting);
+                _context.SaveChanges();
+            }
         }
 
         public List<Meeting> GetAllMeetings()
@@ -35,7 +40,15 @@ namespace ReferensApp.DAL
 
         public void UpdateMeeting(Meeting meeting)
         {
-            throw new NotImplementedException();
+            var meetingToChange = _context.Meetings.SingleOrDefault(m => m.Date == meeting.Date);
+
+            if (meetingToChange != null)
+            {
+                meetingToChange.BookedBy = meeting.BookedBy;
+                meetingToChange.IsBooked = true;
+                _context.SaveChanges();
+            }
+
         }
     }
 }
