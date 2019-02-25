@@ -28,6 +28,9 @@ namespace ReferensApp.Controllers
         public ActionResult Index()
         {
             var vm = new DatePickerViewModel(_repo);
+
+            RemoveOldBookings();
+
             return View(vm.GetDates());
         }
 
@@ -73,6 +76,18 @@ namespace ReferensApp.Controllers
 
             return View(login);
         }
+
+        public void RemoveOldBookings()
+        {
+            var allBookings = _repo.GetAllMeetings();
+            var oldBookings = allBookings.Where(m => m.Date < DateTime.Today).ToList();
+
+            foreach (var booking in oldBookings)
+            {
+                _repo.DeleteMeeting(booking.MeetingId);
+            }
+        }
+
 
         public bool CreateUser(LoginViewModel login)
         {

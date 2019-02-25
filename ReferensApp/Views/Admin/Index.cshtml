@@ -17,6 +17,12 @@
                 if (Model.ReservedTimes.Any(r => r.Date == item))
                 {
                     var testBooking = Model.ReservedTimes.Where(r => r.Date == item).FirstOrDefault();
+                    if (testBooking.MeetingId == 0)
+                    {
+                        testBooking.MeetingId = 0;
+                    }
+
+
 
                     if (testBooking.IsBooked)
                     {
@@ -58,8 +64,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-success" value="Öppna bokning" name="button" />
-                    <input type="submit" class="btn btn-danger" value="Stäng bokning" name="button" />
+                    <input type="submit" id="openBookingBtn" class="btn btn-success" value="Öppna bokning" name="button" />
+                    <input type="submit" id="closeBookingBtn" class="btn btn-danger" value="Stäng bokning" name="button" />
                 </div>
             </div>
         </div>
@@ -95,50 +101,5 @@
 }
 
 @section scripts{
-    <script>
-        $(".hour").click(function (e) {
-            //e.preventDefault();
-            var $this = $(this);
-            var bookingid = $(this).data("bookingid");
-            var monthPicked = $(this).data("month");
-            var dayPicked = $(this).data("day");
-            var hourPicked = $(this).data("hour");
-            var bookedby = $(this).data("bookedby");
-
-            if (bookedby == undefined || bookedby == "") {
-
-                $("#basicModal").data("hourPicked", hourPicked).modal("toggle", $this);
-                $("#basicModal").data("monthPicked", monthPicked);
-                $("#basicModal").data("dayPicked", dayPicked);
-                $("#basicModal").data("bookingid", bookingid);
-
-            } else {
-
-                $("#cancelBookingModal").data("bookedby", bookedby).modal("toggle", $this);
-                $("#cancelBookingModal").data("bookingid", bookingid);
-            }
-        });
-
-        $("#basicModal").on("shown.bs.modal", function (e) {
-            if ($(this).data("hourPicked") < 10) {
-                $('.bookedTime').text("Du har valt följande tid: 0" + $(this).data("hourPicked") + ":00");
-            } else {
-                $('.bookedTime').text("Du har valt följande tid: " + $(this).data("hourPicked") + ":00");
-            }
-
-            $("#monthPicked").val($(this).data("monthPicked"));
-            $("#dayPicked").val($(this).data("dayPicked"));
-            $("#hourPicked").val($(this).data("hourPicked"));
-            $("#bookingid").val($(this).data("bookingid"));
-            console.log($("#bookingId").val())
-        });
-
-        $("#cancelBookingModal").on("shown.bs.modal", function (e) {
-
-            $('.bookedBy').text("Tiden är bokad av: " + $(this).data("bookedby"));
-
-            console.log($(this).data("bookingid"));
-            $("#bookingId").val($(this).data("bookingid"));
-        })
-    </script>
+    @Scripts.Render("~/Scripts/admin.js")
 }
